@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INO BiH | Kosturnica Visoko - Tužilaštvo BiH</title>
+
+    <meta property="og:title" content="INO BiH — Kosturnica Visoko (Tužilaštvo BiH)">
+    <meta property="og:description" content="Sistem za evidenciju, analizu i praćenje statusa slučajeva - Tužilaštvo BiH">
+    <meta property="og:image" content="https://i.ibb.co/mdFSZbZ/Screenshot-2026-09-21-at-12-35-16.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:type" content="website">
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --accent: #3b82f6;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #1f2937;
+        }
+
+        body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%); padding: 20px; box-sizing: border-box; }
+        .login-box { background: var(--card-bg); border: 1px solid var(--border); padding: 40px; border-radius: 20px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        .login-box h2 { color: var(--accent); margin-top: 0; font-size: 1.3rem; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 12px; background: #0b0f19; border: 1px solid var(--border); color: white; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
+        .btn-login { width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .error-msg { color: var(--danger); font-size: 0.85rem; margin-top: 15px; display: none; }
+
+        #mainApp { display: none; }
+        header { background: linear-gradient(180deg, #1f2937 0%, #111827 100%); border-bottom: 1px solid var(--border); padding: 25px 20px; text-align: center; position: relative; }
+        .user-bar { position: absolute; top: 15px; right: 20px; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--text-muted); }
+        .btn-logout { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 15px; }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 25px; }
+        .section-title { font-size: 1.1rem; color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        .btn-print { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .table-responsive { overflow-x: auto; max-height: 500px; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.83rem; text-align: left; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-muted); background-color: #1a2332; text-transform: uppercase; font-size: 0.7rem; position: sticky; top: 0; }
+
+        .btn-edit { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; }
+        .modal-content textarea { width: 100%; background: #0b0f19; border: 1px solid var(--border); color: white; border-radius: 8px; padding: 10px; box-sizing: border-box; margin-top: 10px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(isSubmitting) { loadDataFromScript(); isSubmitting=false; }"></iframe>
+
+    <div id="loginScreen">
+        <div class="login-box">
+            <h2>🏛️ INO BiH — Kosturnica Visoko</h2>
+            <p>Tužilaštvo Bosne i Hercegovine | Zaštićeni pristup</p>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label>Ime i Prezime istražitelja:</label>
+                    <input type="text" id="loginFullname" placeholder="Npr. Mirza Saračević" required>
+                </div>
+                <div class="input-group">
+                    <label>Lozinka:</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-login" id="btnLogin">Prijavi se 🔒</button>
+                <div class="error-msg" id="loginError">Pogrešna lozinka ili ime!</div>
+            </form>
+        </div>
+    </div>
+
+    <div id="mainApp">
+        <header>
+            <div class="user-bar">
+                <span>👤 <strong id="prijavljeniKorisnik" style="color:white;">-</strong></span>
+                <button class="btn-logout" onclick="logout()">Odjava 🚪</button>
+            </div>
+            <h1>🏛️ INO BiH — Terenski Ured Sarajevo</h1>
+            <p>Stanje u kosturnici g.g. Visoko — Tužilaštvo Bosne i Hercegovine</p>
+        </header>
+
+        <div class="container">
+            <div style="text-align: right; margin-bottom: 15px;">
+                <button class="btn-print" onclick="window.print()">🖨️ Ispiši u PDF</button>
+            </div>
+
+            <!-- TABELA 1 -->
+            <div class="card">
+                <h3 class="section-title"> TUZILASTVO BOSNE I HERCEGOVINE</h3>
+                <div class="table-responsive">
+                    <table id="tblTabela1">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Br.</th>
+                                <th>Identitet / Oznaka</th>
+                                <th>Uzorci DNK u Visokom</th>
+                                <th>Lokacija</th>
+                                <th>Komentar</th>
+                                <th style="width: 80px; text-align: center;">Akcija</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TABELA 2 -->
+            <div class="card">
+                <h3 class="section-title"> Slučajevi sa generiranim izvještajima o podudaranju DNK za koje bi konačna identifikacija trebala biti moguća</h3>
+                <div class="table-responsive">
+                    <table id="tblTabela2">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Br.</th>
+                                <th>Oznaka slučaja</th>
+                                <th>Uzorci DNK</th>
+                                <th>Komentar / Status</th>
+                                <th style="width: 80px; text-align: center;">Akcija</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TABELA 3 -->
+            <div class="card">
+                <h3 class="section-title"> Slučajevi/skeletni elementi koji imaju podudaranje DNK sa DNK ukopanih slučajeva</h3>
+                <div class="table-responsive">
+                    <table id="tblTabela3">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Br.</th>
+                                <th>Oznaka slučaja</th>
+                                <th>Uzorci DNK u Visokom</th>
+                                <th>Ukopani uzorci</th>
+                                <th>Komentar / Preporuka</th>
+                                <th style="width: 80px; text-align: center;">Akcija</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TABELA 4 -->
+            <div class="card">
+                <h3 class="section-title">Slučajevi s podudaranjem DNK sa slučajevima iz drugih nadležnosti</h3>
+                <div class="table-responsive">
+                    <table id="tblTabela4">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Br.</th>
+                                <th>Oznaka slučaja</th>
+                                <th>Uzorci Visoko</th>
+                                <th>Druga nadležnost</th>
+                                <th>Uzorci iz druge nadležnosti</th>
+                                <th>Lokacija</th>
+                                <th>Komentar</th>
+                                <th style="width: 80px; text-align: center;">Akcija</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>Institut za nestale osobe BiH — Terenski ured Sarajevo | Istražitelj Mirza Saračević</p>
+        </footer>
+    </div>
+
+    <!-- MODAL FOR EDITING -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:var(--text-main);" id="modalTitle">Uredi predmet</h3>
+            <form id="editForm" action="" method="GET" target="hidden_iframe" onsubmit="submitForm()">
+                <input type="hidden" name="action" id="modalAction" value="updateRecord">
+                <input type="hidden" name="id" id="modalId">
+                <input type="hidden" name="tabela" id="modalTabela">
+                <input type="hidden" name="autor" id="modalAutor">
+
+                <label style="font-size:0.8rem; color:var(--text-muted);">Komentar / Detalji:</label>
+                <textarea name="komentar" id="modalKomentar" rows="5" required></textarea>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-edit" style="background:transparent; color:var(--text-muted); border-color:var(--border);" onclick="closeModal()">Otkaži</button>
+                    <button type="submit" class="btn-edit" style="background:var(--accent); color:white;">Spremi 💾</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxf7B5swpCQ6LdUc9auYOT-5u2d_2zvWDpAd5CPw8eGTuOuJ5fvk_SHKcUy-IpRcZaF-w/exec";
+        let isSubmitting = false;
+        let trenutniKorisnik = "";
+        let dbData = { tabela1: [], tabela2: [], tabela3: [], tabela4: [] };
+
+        function handleLogin(e) {
+            e.preventDefault();
+            let fullname = document.getElementById('loginFullname').value.trim();
+            let pass = document.getElementById('loginPass').value.trim();
+
+            if (pass !== "INO2026!" || fullname.length < 2) {
+                document.getElementById('loginError').style.display = "block";
+                return;
+            }
+
+            trenutniKorisnik = fullname;
+            document.getElementById('prijavljeniKorisnik').innerText = fullname;
+            document.getElementById('loginScreen').style.display = "none";
+            document.getElementById('mainApp').style.display = "block";
+            
+            fetch(`${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(fullname)}`).catch(() => {});
+            loadDataFromScript();
+        }
+
+        function logout() {
+            trenutniKorisnik = "";
+            document.getElementById('mainApp').style.display = "none";
+            document.getElementById('loginScreen').style.display = "flex";
+        }
+
+        function loadDataFromScript() {
+            fetch(SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.tabela1 || data.tabela2) {
+                        dbData = data;
+                        renderTables();
+                    }
+                });
+        }
+
+        function renderTables() {
+            // Render Tabela 1
+            let tb1 = document.querySelector('#tblTabela1 tbody');
+            tb1.innerHTML = '';
+            if (dbData.tabela1) {
+                dbData.tabela1.forEach(item => {
+                    tb1.innerHTML += `<tr>
+                        <td><strong>${item.br}</strong></td>
+                        <td>${item.oznaka}</td>
+                        <td><code>${item.uzorci}</code></td>
+                        <td>${item.lokacija}</td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
+                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela1', '${item.br}')">✏️ Uredi</button></td>
+                    </tr>`;
+                });
+            }
+
+            // Render Tabela 2
+            let tb2 = document.querySelector('#tblTabela2 tbody');
+            tb2.innerHTML = '';
+            if (dbData.tabela2) {
+                dbData.tabela2.forEach(item => {
+                    tb2.innerHTML += `<tr>
+                        <td><strong>${item.br}</strong></td>
+                        <td>${item.oznaka}</td>
+                        <td><code>${item.uzorci}</code></td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
+                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela2', '${item.br}')">✏️ Uredi</button></td>
+                    </tr>`;
+                });
+            }
+
+            // Render Tabela 3
+            let tb3 = document.querySelector('#tblTabela3 tbody');
+            tb3.innerHTML = '';
+            if (dbData.tabela3) {
+                dbData.tabela3.forEach(item => {
+                    tb3.innerHTML += `<tr>
+                        <td><strong>${item.br}</strong></td>
+                        <td>${item.oznaka}</td>
+                        <td><code>${item.uzorci}</code></td>
+                        <td><code>${item.ukopani}</code></td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
+                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela3', '${item.br}')">✏️ Uredi</button></td>
+                    </tr>`;
+                });
+            }
+
+            // Render Tabela 4
+            let tb4 = document.querySelector('#tblTabela4 tbody');
+            tb4.innerHTML = '';
+            if (dbData.tabela4) {
+                dbData.tabela4.forEach(item => {
+                    tb4.innerHTML += `<tr>
+                        <td><strong>${item.br}</strong></td>
+                        <td>${item.oznaka}</td>
+                        <td><code>${item.uzorci}</code></td>
+                        <td>${item.oznakaDruga}</td>
+                        <td><code>${item.uzorciDruga}</code></td>
+                        <td>${item.lokacija}</td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
+                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela4', '${item.br}')">✏️ Uredi</button></td>
+                    </tr>`;
+                });
+            }
+        }
+
+        function openEditModal(tabela, br) {
+            let item = dbData[tabela].find(x => String(x.br) === String(br));
+            if (!item) return;
+
+            document.getElementById('modalAction').value = "updateRecord";
+            document.getElementById('modalTabela').value = tabela;
+            document.getElementById('modalId').value = br;
+            document.getElementById('modalAutor').value = trenutniKorisnik;
+            document.getElementById('modalTitle').innerText = `Uredi predmet Br. ${br} (${tabela.toUpperCase()})`;
+            document.getElementById('modalKomentar').value = item.komentar || "";
+
+            document.getElementById('editModal').style.display = 'flex';
+            document.getElementById('editForm').action = SCRIPT_URL;
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function submitForm() {
+            isSubmitting = true;
+            let tabela = document.getElementById('modalTabela').value;
+            let id = document.getElementById('modalId').value;
+            let noviKomentar = document.getElementById('modalKomentar').value;
+
+            let item = dbData[tabela].find(x => String(x.br) === String(id));
+            if (item) {
+                item.komentar = noviKomentar + ` (Ažurirao: ${trenutniKorisnik})`;
+            }
+
+            renderTables();
+            setTimeout(() => { closeModal(); }, 300);
+        }
+    </script>
+</body>
+</html>
