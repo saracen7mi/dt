@@ -24,10 +24,11 @@
             --border: #1f2937;
         }
 
-        body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.4; }
         #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%); padding: 20px; box-sizing: border-box; }
         .login-box { background: var(--card-bg); border: 1px solid var(--border); padding: 40px; border-radius: 20px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
         .login-box h2 { color: var(--accent); margin-top: 0; font-size: 1.3rem; }
+        .login-box p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
         .input-group input { width: 100%; padding: 12px; background: #0b0f19; border: 1px solid var(--border); color: white; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
@@ -43,18 +44,136 @@
         .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 25px; }
         .section-title { font-size: 1.1rem; color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 
-        .btn-print { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .action-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .btn-print { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+        .btn-print:hover { background: var(--success); color: white; }
+        .btn-log { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+        .btn-log:hover { background: var(--accent); color: white; }
+
         .table-responsive { overflow-x: auto; max-height: 500px; border-radius: 8px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; font-size: 0.83rem; text-align: left; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-        th { color: var(--text-muted); background-color: #1a2332; text-transform: uppercase; font-size: 0.7rem; position: sticky; top: 0; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { color: var(--text-muted); background-color: #1a2332; text-transform: uppercase; font-size: 0.7rem; position: sticky; top: 0; z-index: 10; }
+        tbody tr:hover { background-color: rgba(255, 255, 255, 0.02); }
 
-        .btn-edit { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+        .btn-edit { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
+        .btn-edit:hover { background: var(--accent); color: white; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--border); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; }
-        .modal-content textarea { width: 100%; background: #0b0f19; border: 1px solid var(--border); color: white; border-radius: 8px; padding: 10px; box-sizing: border-box; margin-top: 10px; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .modal-content textarea { width: 100%; background: #0b0f19; border: 1px solid var(--border); color: white; border-radius: 8px; padding: 10px; box-sizing: border-box; margin-top: 10px; font-family: inherit; font-size: 0.9rem; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+
+        .log-list { max-height: 260px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px; background: #0b0f19; font-size: 0.85rem; }
+        .log-item { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+        .log-item:last-child { border-bottom: none; }
+
         footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+        /* ELEMENTI VIDLJIVI SAMO PRILIKOM ŠTAMPE */
+        .print-only { display: none; }
+
+        /* STILOVI ZA ŠTAMPANJE / PDF (SLUŽBENI FORMAT) */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 14mm 12mm;
+            }
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Times New Roman", Times, serif !important;
+            }
+            header, .action-bar, .btn-edit, .user-bar, footer, .modal, .no-print, .screen-only,
+            table th.screen-only, table td.screen-only {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 18px 0 0 0 !important;
+            }
+            .card:first-of-type {
+                margin-top: 0 !important;
+            }
+            .print-header-title {
+                text-align: center;
+                font-size: 13pt;
+                font-weight: bold;
+                text-transform: uppercase;
+                line-height: 1.35;
+                margin: 0 auto 16px auto;
+                max-width: 90%;
+                color: #000000 !important;
+            }
+            .section-title {
+                color: #000000 !important;
+                border-bottom: 1px solid #000000 !important;
+                font-size: 11.5pt !important;
+                page-break-after: avoid;
+            }
+            .table-responsive {
+                max-height: none !important;
+                overflow: visible !important;
+                border: none !important;
+            }
+            table {
+                width: 100% !important;
+                font-size: 9.5pt !important;
+                color: #000000 !important;
+                border-collapse: collapse !important;
+            }
+            thead {
+                display: table-header-group;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+            th, td {
+                border: 1px solid #000000 !important;
+                padding: 6px 8px !important;
+                color: #000000 !important;
+                background: #ffffff !important;
+                vertical-align: top !important;
+                text-align: left !important;
+                font-style: normal !important;
+                position: static !important;
+                word-wrap: break-word;
+            }
+            th {
+                background-color: #f2f2f2 !important;
+                font-weight: bold !important;
+                text-transform: none !important;
+                font-size: 9.5pt !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            code {
+                font-family: "Times New Roman", Times, serif !important;
+                font-size: 9.5pt !important;
+                color: #000000 !important;
+            }
+            .print-footer-meta {
+                margin-top: 18px;
+                padding-top: 8px;
+                border-top: 1px solid #000000;
+                display: flex !important;
+                justify-content: space-between;
+                font-size: 9.5pt;
+                color: #000000 !important;
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body>
@@ -91,13 +210,19 @@
         </header>
 
         <div class="container">
-            <div style="text-align: right; margin-bottom: 15px;">
-                <button class="btn-print" onclick="window.print()">🖨️ Ispiši u PDF</button>
+            <!-- ZVANIČNI NASLOV SAMO ZA ŠTAMPU -->
+            <div class="print-only print-header-title">
+                Stanje u kosturnici g.g. Visoko — Tužilaštvo Bosne i Hercegovine
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-log" onclick="openPrintLogModal()">📜 Pregled štampe</button>
+                <button class="btn-print" onclick="handlePrint()">🖨️ Ispiši u PDF</button>
             </div>
 
             <!-- TABELA 1 -->
             <div class="card">
-                <h3 class="section-title"> TUZILASTVO BOSNE I HERCEGOVINE</h3>
+                <h3 class="section-title">TUŽILAŠTVO BOSNE I HERCEGOVINE</h3>
                 <div class="table-responsive">
                     <table id="tblTabela1">
                         <thead>
@@ -107,7 +232,7 @@
                                 <th>Uzorci DNK u Visokom</th>
                                 <th>Lokacija</th>
                                 <th>Komentar</th>
-                                <th style="width: 80px; text-align: center;">Akcija</th>
+                                <th class="screen-only" style="width: 80px; text-align: center;">Akcija</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -117,7 +242,7 @@
 
             <!-- TABELA 2 -->
             <div class="card">
-                <h3 class="section-title"> Slučajevi sa generiranim izvještajima o podudaranju DNK za koje bi konačna identifikacija trebala biti moguća</h3>
+                <h3 class="section-title">Slučajevi sa generiranim izvještajima o podudaranju DNK za koje bi konačna identifikacija trebala biti moguća</h3>
                 <div class="table-responsive">
                     <table id="tblTabela2">
                         <thead>
@@ -126,7 +251,7 @@
                                 <th>Oznaka slučaja</th>
                                 <th>Uzorci DNK</th>
                                 <th>Komentar / Status</th>
-                                <th style="width: 80px; text-align: center;">Akcija</th>
+                                <th class="screen-only" style="width: 80px; text-align: center;">Akcija</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -136,7 +261,7 @@
 
             <!-- TABELA 3 -->
             <div class="card">
-                <h3 class="section-title"> Slučajevi/skeletni elementi koji imaju podudaranje DNK sa DNK ukopanih slučajeva</h3>
+                <h3 class="section-title">Slučajevi/skeletni elementi koji imaju podudaranje DNK sa DNK ukopanih slučajeva</h3>
                 <div class="table-responsive">
                     <table id="tblTabela3">
                         <thead>
@@ -146,7 +271,7 @@
                                 <th>Uzorci DNK u Visokom</th>
                                 <th>Ukopani uzorci</th>
                                 <th>Komentar / Preporuka</th>
-                                <th style="width: 80px; text-align: center;">Akcija</th>
+                                <th class="screen-only" style="width: 80px; text-align: center;">Akcija</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -168,11 +293,17 @@
                                 <th>Uzorci iz druge nadležnosti</th>
                                 <th>Lokacija</th>
                                 <th>Komentar</th>
-                                <th style="width: 80px; text-align: center;">Akcija</th>
+                                <th class="screen-only" style="width: 80px; text-align: center;">Akcija</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+
+                <!-- PODNOŽJE SA IMENOM ULOGOVANOG KORISNIKA I VREMENOM ISPISA (SAMO ZA ŠTAMPU) -->
+                <div class="print-only print-footer-meta">
+                    <span>Dokument isprintao: <strong id="printAutorIme">-</strong></span>
+                    <span>Datum i vrijeme ispisa: <strong id="printVrijemeIspisa">-</strong></span>
                 </div>
             </div>
 
@@ -204,11 +335,26 @@
         </div>
     </div>
 
+    <!-- MODAL ZA PREGLED KO JE ŠTAMPAO -->
+    <div id="printLogModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:var(--text-main);">📜 Evidencija ko je štampao dokument</h3>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0;">
+                Zabilježeni ispisi u ovom pregledniku (pozivi su poslani i prema Apps Script endpointu):
+            </p>
+            <div id="printLogList" class="log-list"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-edit" style="background:var(--accent); color:white;" onclick="closePrintLogModal()">Zatvori</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxf7B5swpCQ6LdUc9auYOT-5u2d_2zvWDpAd5CPw8eGTuOuJ5fvk_SHKcUy-IpRcZaF-w/exec";
         let isSubmitting = false;
         let trenutniKorisnik = "";
         let dbData = { tabela1: [], tabela2: [], tabela3: [], tabela4: [] };
+        let evidencijaStampe = JSON.parse(localStorage.getItem("ino_print_log_bih") || "[]");
 
         function handleLogin(e) {
             e.preventDefault();
@@ -225,7 +371,7 @@
             document.getElementById('loginScreen').style.display = "none";
             document.getElementById('mainApp').style.display = "block";
             
-            fetch(`${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(fullname)}`).catch(() => {});
+            fetch(`${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(fullname)}`, { mode: 'no-cors' }).catch(() => {});
             loadDataFromScript();
         }
 
@@ -239,11 +385,12 @@
             fetch(SCRIPT_URL)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.tabela1 || data.tabela2) {
+                    if (data.tabela1 || data.tabela2 || data.tabela3 || data.tabela4) {
                         dbData = data;
                         renderTables();
                     }
-                });
+                })
+                .catch(() => {});
         }
 
         function renderTables() {
@@ -255,10 +402,10 @@
                     tb1.innerHTML += `<tr>
                         <td><strong>${item.br}</strong></td>
                         <td>${item.oznaka}</td>
-                        <td><code>${item.uzorci}</code></td>
-                        <td>${item.lokacija}</td>
-                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
-                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela1', '${item.br}')">✏️ Uredi</button></td>
+                        <td><code>${item.uzorci || '-'}</code></td>
+                        <td>${item.lokacija || '-'}</td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar || '-'}</td>
+                        <td class="screen-only" style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela1', '${item.br}')">✏️ Uredi</button></td>
                     </tr>`;
                 });
             }
@@ -271,9 +418,9 @@
                     tb2.innerHTML += `<tr>
                         <td><strong>${item.br}</strong></td>
                         <td>${item.oznaka}</td>
-                        <td><code>${item.uzorci}</code></td>
-                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
-                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela2', '${item.br}')">✏️ Uredi</button></td>
+                        <td><code>${item.uzorci || '-'}</code></td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar || '-'}</td>
+                        <td class="screen-only" style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela2', '${item.br}')">✏️ Uredi</button></td>
                     </tr>`;
                 });
             }
@@ -286,10 +433,10 @@
                     tb3.innerHTML += `<tr>
                         <td><strong>${item.br}</strong></td>
                         <td>${item.oznaka}</td>
-                        <td><code>${item.uzorci}</code></td>
-                        <td><code>${item.ukopani}</code></td>
-                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
-                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela3', '${item.br}')">✏️ Uredi</button></td>
+                        <td><code>${item.uzorci || '-'}</code></td>
+                        <td><code>${item.ukopani || '-'}</code></td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar || '-'}</td>
+                        <td class="screen-only" style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela3', '${item.br}')">✏️ Uredi</button></td>
                     </tr>`;
                 });
             }
@@ -302,15 +449,69 @@
                     tb4.innerHTML += `<tr>
                         <td><strong>${item.br}</strong></td>
                         <td>${item.oznaka}</td>
-                        <td><code>${item.uzorci}</code></td>
-                        <td>${item.oznakaDruga}</td>
-                        <td><code>${item.uzorciDruga}</code></td>
-                        <td>${item.lokacija}</td>
-                        <td style="color:#d1d5db; font-style:italic;">${item.komentar}</td>
-                        <td style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela4', '${item.br}')">✏️ Uredi</button></td>
+                        <td><code>${item.uzorci || '-'}</code></td>
+                        <td>${item.oznakaDruga || '-'}</td>
+                        <td><code>${item.uzorciDruga || '-'}</code></td>
+                        <td>${item.lokacija || '-'}</td>
+                        <td style="color:#d1d5db; font-style:italic;">${item.komentar || '-'}</td>
+                        <td class="screen-only" style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela4', '${item.br}')">✏️ Uredi</button></td>
                     </tr>`;
                 });
             }
+        }
+
+        function handlePrint() {
+            let vrijemeSada = new Date().toLocaleString("bs-BA");
+            let korisnik = trenutniKorisnik || "Mirza Saračević";
+
+            // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
+            document.getElementById('printAutorIme').innerText = korisnik;
+            document.getElementById('printVrijemeIspisa').innerText = vrijemeSada;
+
+            // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
+            evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
+            localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+
+            // 3. Šalje poziv na postojeći SCRIPT_URL (bez mijenjanja Apps Script koda)
+            let params = new URLSearchParams({
+                action: "updateRecord",
+                id: "PRINT_LOG",
+                br: "PRINT_LOG",
+                tabela: "PRINT_LOG",
+                autor: korisnik,
+                fullname: korisnik,
+                vrijeme: vrijemeSada,
+                komentar: `Dokument isprintao: ${korisnik} (${vrijemeSada})`
+            });
+
+            let iframe = document.getElementById('hidden_iframe');
+            if (iframe) {
+                iframe.src = `${SCRIPT_URL}?${params.toString()}`;
+            }
+            fetch(`${SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
+
+            // 4. Pokreće prozor za štampu / PDF
+            setTimeout(() => {
+                window.print();
+            }, 150);
+        }
+
+        function openPrintLogModal() {
+            let listEl = document.getElementById('printLogList');
+            if (!evidencijaStampe.length) {
+                listEl.innerHTML = `<div class="log-item" style="color:var(--text-muted);">Još nema zabilježenih ispisa u ovom pregledniku.</div>`;
+            } else {
+                listEl.innerHTML = evidencijaStampe.map((entry, idx) => `
+                    <div class="log-item">
+                        <strong>#${evidencijaStampe.length - idx}</strong> — <strong>${entry.korisnik}</strong> je isprintao dokument u <span>${entry.vrijeme}</span>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('printLogModal').style.display = 'flex';
+        }
+
+        function closePrintLogModal() {
+            document.getElementById('printLogModal').style.display = 'none';
         }
 
         function openEditModal(tabela, br) {
