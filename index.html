@@ -243,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- TABELA 2 (Prva tabela u printu) -->
+            <!-- TABELA 2 (Prva tabela u printu — bez zamjene kolona, kao na slici) -->
             <div class="card" id="cardTabela2">
                 <h3 class="section-title">Slučajevi sa generiranim izvještajima o podudaranju DNK za koje bi konačna identifikacija trebala biti moguća</h3>
                 <div class="table-responsive">
@@ -262,7 +262,7 @@
                 </div>
             </div>
 
-            <!-- TABELA 3 (Druga tabela u printu: zamjena Uzorci DNK <-> Oznaka slučaja, druga kolona u printu se zove Analiza INO, bez Ukopani uzorci) -->
+            <!-- TABELA 3 (Druga tabela u printu — zamjena Uzorci DNK <-> Oznaka slučaja i naziv Analiza INO, bez Ukopani uzorci) -->
             <div class="card" id="cardTabela3">
                 <h3 class="section-title">Slučajevi/skeletni elementi koji imaju podudaranje DNK sa DNK ukopanih slučajeva</h3>
                 <div class="table-responsive">
@@ -417,7 +417,7 @@
                 });
             }
 
-            // Render Tabela 2
+            // Render Tabela 2 (prva tabela u printu: Oznaka slučaja | Uzorci DNK)
             let tb2 = document.querySelector('#tblTabela2 tbody');
             tb2.innerHTML = '';
             if (dbData.tabela2) {
@@ -432,9 +432,7 @@
                 });
             }
 
-            // Render Tabela 3 (Druga tabela u printu):
-            // Na ekranu: Oznaka slučaja | Uzorci DNK u Visokom | Ukopani uzorci
-            // U printu: Oznaka slučaja (uzorci) | Analiza INO (oznaka) | bez Ukopani uzorci
+            // Render Tabela 3 (druga tabela u printu: zamjena Uzorci DNK <-> Oznaka slučaja i naziv Analiza INO, bez Ukopani uzorci)
             let tb3 = document.querySelector('#tblTabela3 tbody');
             tb3.innerHTML = '';
             if (dbData.tabela3) {
@@ -456,7 +454,7 @@
                 });
             }
 
-            // Render Tabela 4 (Treća tabela u printu — sve ostaje kako stoji)
+            // Render Tabela 4 (treća tabela u printu — sve ostaje kako stoji)
             let tb4 = document.querySelector('#tblTabela4 tbody');
             tb4.innerHTML = '';
             if (dbData.tabela4) {
@@ -490,9 +488,9 @@
             evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
             localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
 
-            // 3. Jedan jedinstveni poziv na postojeći 'login' endpoint (bez diranja Apps Scripta)
-            let logOznaka = `${korisnik} — [PRINT_LOG] (Tužilaštvo BiH | ${vrijemeSada})`;
-            fetch(`${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(logOznaka)}`, { mode: 'no-cors' }).catch(() => {});
+            // 3. Šalje naziv sa oznakom PRINT kroz postojeći 'login' endpoint
+            let logIme = `${korisnik} — PRINT`;
+            fetch(`${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(logIme)}`, { mode: 'no-cors' }).catch(() => {});
 
             // 4. Pokreće prozor za štampu / PDF
             setTimeout(() => {
