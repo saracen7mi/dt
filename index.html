@@ -73,7 +73,7 @@
         /* ELEMENTI VIDLJIVI SAMO PRILIKOM ŠTAMPE */
         .print-only { display: none; }
 
-        /* STILOVI ZA ŠTAMPANJE / PDF (SLUŽBENI FORMAT) */
+        /* STILOVI ZA ŠTAMPANJE / PDF */
         @media print {
             @page {
                 size: A4 landscape;
@@ -91,6 +91,9 @@
             .print-only {
                 display: block !important;
             }
+            span.print-only {
+                display: inline !important;
+            }
             .container {
                 max-width: 100% !important;
                 margin: 0 !important;
@@ -103,7 +106,7 @@
                 padding: 0 !important;
                 margin: 18px 0 0 0 !important;
             }
-            .card:first-of-type {
+            #cardTabela2 {
                 margin-top: 0 !important;
             }
             .print-header-title {
@@ -220,8 +223,8 @@
                 <button class="btn-print" onclick="handlePrint()">🖨️ Ispiši u PDF</button>
             </div>
 
-            <!-- TABELA 1 -->
-            <div class="card">
+            <!-- TABELA 1 (Započeta tabela — sakriva se prilikom štampe) -->
+            <div class="card no-print" id="cardTabela1">
                 <h3 class="section-title">TUŽILAŠTVO BOSNE I HERCEGOVINE</h3>
                 <div class="table-responsive">
                     <table id="tblTabela1">
@@ -240,8 +243,8 @@
                 </div>
             </div>
 
-            <!-- TABELA 2 -->
-            <div class="card">
+            <!-- TABELA 2 (Prva tabela u printu) -->
+            <div class="card" id="cardTabela2">
                 <h3 class="section-title">Slučajevi sa generiranim izvještajima o podudaranju DNK za koje bi konačna identifikacija trebala biti moguća</h3>
                 <div class="table-responsive">
                     <table id="tblTabela2">
@@ -249,7 +252,10 @@
                             <tr>
                                 <th style="width: 50px;">Br.</th>
                                 <th>Oznaka slučaja</th>
-                                <th>Uzorci DNK</th>
+                                <th>
+                                    <span class="screen-only">Uzorci DNK</span>
+                                    <span class="print-only">Analiza INO</span>
+                                </th>
                                 <th>Komentar / Status</th>
                                 <th class="screen-only" style="width: 80px; text-align: center;">Akcija</th>
                             </tr>
@@ -259,8 +265,8 @@
                 </div>
             </div>
 
-            <!-- TABELA 3 -->
-            <div class="card">
+            <!-- TABELA 3 (Druga tabela u printu — bez kolone Ukopani uzorci u printu) -->
+            <div class="card" id="cardTabela3">
                 <h3 class="section-title">Slučajevi/skeletni elementi koji imaju podudaranje DNK sa DNK ukopanih slučajeva</h3>
                 <div class="table-responsive">
                     <table id="tblTabela3">
@@ -269,7 +275,7 @@
                                 <th style="width: 50px;">Br.</th>
                                 <th>Oznaka slučaja</th>
                                 <th>Uzorci DNK u Visokom</th>
-                                <th>Ukopani uzorci</th>
+                                <th class="screen-only">Ukopani uzorci</th>
                                 <th>Komentar / Preporuka</th>
                                 <th class="screen-only" style="width: 80px; text-align: center;">Akcija</th>
                             </tr>
@@ -279,8 +285,8 @@
                 </div>
             </div>
 
-            <!-- TABELA 4 -->
-            <div class="card">
+            <!-- TABELA 4 (Treća tabela u printu — sve ostaje kako stoji) -->
+            <div class="card" id="cardTabela4">
                 <h3 class="section-title">Slučajevi s podudaranjem DNK sa slučajevima iz drugih nadležnosti</h3>
                 <div class="table-responsive">
                     <table id="tblTabela4">
@@ -340,7 +346,7 @@
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--text-main);">📜 Evidencija ko je štampao dokument</h3>
             <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0;">
-                Zabilježeni ispisi u ovom pregledniku (pozivi su poslani i prema Apps Script endpointu):
+                Zabilježeni ispisi u ovom pregledniku (zapis se šalje i u Google Sheets list <strong>Prijave</strong>):
             </p>
             <div id="printLogList" class="log-list"></div>
             <div class="modal-actions">
@@ -411,21 +417,29 @@
             }
 
             // Render Tabela 2
+            // Na ekranu: Oznaka slučaja | Uzorci DNK
+            // U printu: Oznaka slučaja (uzorci) | Analiza INO (oznaka)
             let tb2 = document.querySelector('#tblTabela2 tbody');
             tb2.innerHTML = '';
             if (dbData.tabela2) {
                 dbData.tabela2.forEach(item => {
                     tb2.innerHTML += `<tr>
                         <td><strong>${item.br}</strong></td>
-                        <td>${item.oznaka}</td>
-                        <td><code>${item.uzorci || '-'}</code></td>
+                        <td>
+                            <span class="screen-only">${item.oznaka || '-'}</span>
+                            <span class="print-only">${item.uzorci || '-'}</span>
+                        </td>
+                        <td>
+                            <code class="screen-only">${item.uzorci || '-'}</code>
+                            <span class="print-only">${item.oznaka || '-'}</span>
+                        </td>
                         <td style="color:#d1d5db; font-style:italic;">${item.komentar || '-'}</td>
                         <td class="screen-only" style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela2', '${item.br}')">✏️ Uredi</button></td>
                     </tr>`;
                 });
             }
 
-            // Render Tabela 3
+            // Render Tabela 3 (Ukopani uzorci skriveni u printu preko class="screen-only")
             let tb3 = document.querySelector('#tblTabela3 tbody');
             tb3.innerHTML = '';
             if (dbData.tabela3) {
@@ -434,14 +448,14 @@
                         <td><strong>${item.br}</strong></td>
                         <td>${item.oznaka}</td>
                         <td><code>${item.uzorci || '-'}</code></td>
-                        <td><code>${item.ukopani || '-'}</code></td>
+                        <td class="screen-only"><code>${item.ukopani || '-'}</code></td>
                         <td style="color:#d1d5db; font-style:italic;">${item.komentar || '-'}</td>
                         <td class="screen-only" style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela3', '${item.br}')">✏️ Uredi</button></td>
                     </tr>`;
                 });
             }
 
-            // Render Tabela 4
+            // Render Tabela 4 (Sve ostaje kako stoji)
             let tb4 = document.querySelector('#tblTabela4 tbody');
             tb4.innerHTML = '';
             if (dbData.tabela4) {
@@ -460,85 +474,34 @@
             }
         }
 
-        // function handlePrint() {
-        //     let vrijemeSada = new Date().toLocaleString("bs-BA");
-        //     let korisnik = trenutniKorisnik || "Mirza Saračević";
+        function handlePrint() {
+            let vrijemeSada = new Date().toLocaleString("bs-BA");
+            let korisnik = trenutniKorisnik || "Mirza Saračević";
 
-        //     // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
-        //     document.getElementById('printAutorIme').innerText = korisnik;
-        //     document.getElementById('printVrijemeIspisa').innerText = vrijemeSada;
+            // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
+            document.getElementById('printAutorIme').innerText = korisnik;
+            document.getElementById('printVrijemeIspisa').innerText = vrijemeSada;
 
-        //     // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
-        //     evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
-        //     localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+            // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
+            evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
+            localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
 
-        //     // 3. Šalje poziv na postojeći SCRIPT_URL (bez mijenjanja Apps Script koda)
-        //     let params = new URLSearchParams({
-        //         action: "updateRecord",
-        //         id: "PRINT_LOG",
-        //         br: "PRINT_LOG",
-        //         tabela: "PRINT_LOG",
-        //         autor: korisnik,
-        //         fullname: korisnik,
-        //         vrijeme: vrijemeSada,
-        //         komentar: `Dokument isprintao: ${korisnik} (${vrijemeSada})`
-        //     });
+            // 3. Šalje PRINT_LOG preko action=login da ga tvoj postojeći Apps Script upiše u list "Prijave"
+            let logUnos = `${korisnik} — PRINT_LOG (Štampa: Tužilaštvo BiH | ${vrijemeSada})`;
+            let urlZaLog = `${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(logUnos)}`;
 
-        //     let iframe = document.getElementById('hidden_iframe');
-        //     if (iframe) {
-        //         iframe.src = `${SCRIPT_URL}?${params.toString()}`;
-        //     }
-        //     fetch(`${SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
+            let iframe = document.getElementById('hidden_iframe');
+            if (iframe) {
+                iframe.src = urlZaLog;
+            }
+            fetch(urlZaLog, { mode: 'no-cors' }).catch(() => {});
 
-        //     // 4. Pokreće prozor za štampu / PDF
-        //     setTimeout(() => {
-        //         window.print();
-        //     }, 150);
-        // }
+            // 4. Pokreće prozor za štampu / PDF
+            setTimeout(() => {
+                window.print();
+            }, 250);
+        }
 
-function handlePrint() {
-    let vrijemeSada = new Date().toLocaleString("bs-BA");
-    let korisnik = trenutniKorisnik || localStorage.getItem("user_fullname") || "Mirza Saračević";
-    let naslovDokumenta = document.title || "Izvještaj";
-
-    // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
-    let autorEl = document.getElementById('printAutorIme');
-    let vrijemeEl = document.getElementById('printVrijemeIspisa');
-    if (autorEl) autorEl.innerText = korisnik;
-    if (vrijemeEl) vrijemeEl.innerText = vrijemeSada;
-
-    // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
-    if (typeof evidencijaStampe !== "undefined" && Array.isArray(evidencijaStampe)) {
-        evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
-        localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
-    }
-
-    // 3. Šalje PRINT_LOG kroz 'login' akciju da prođe u Sheets dnevnik
-    let logKorisnik = `${korisnik} — PRINT_LOG (${naslovDokumenta} | ${vrijemeSada})`;
-    let params = new URLSearchParams({
-        action: "login",
-        fullname: logKorisnik,
-        autor: korisnik,
-        vrijeme: vrijemeSada,
-        komentar: `Dokument isprintao: ${korisnik} (${vrijemeSada})`
-    });
-
-    let iframe = document.getElementById('hidden_iframe');
-    if (iframe) {
-        iframe.src = `${SCRIPT_URL}?${params.toString()}`;
-    }
-    fetch(`${SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
-
-    // 4. Pokreće prozor za štampu / PDF
-    setTimeout(() => {
-        window.print();
-    }, 150);
-}
-
-
-
-
-        
         function openPrintLogModal() {
             let listEl = document.getElementById('printLogList');
             if (!evidencijaStampe.length) {
