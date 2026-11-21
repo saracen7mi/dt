@@ -460,42 +460,85 @@
             }
         }
 
-        function handlePrint() {
-            let vrijemeSada = new Date().toLocaleString("bs-BA");
-            let korisnik = trenutniKorisnik || "Mirza Saračević";
+        // function handlePrint() {
+        //     let vrijemeSada = new Date().toLocaleString("bs-BA");
+        //     let korisnik = trenutniKorisnik || "Mirza Saračević";
 
-            // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
-            document.getElementById('printAutorIme').innerText = korisnik;
-            document.getElementById('printVrijemeIspisa').innerText = vrijemeSada;
+        //     // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
+        //     document.getElementById('printAutorIme').innerText = korisnik;
+        //     document.getElementById('printVrijemeIspisa').innerText = vrijemeSada;
 
-            // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
-            evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
-            localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+        //     // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
+        //     evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
+        //     localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
 
-            // 3. Šalje poziv na postojeći SCRIPT_URL (bez mijenjanja Apps Script koda)
-            let params = new URLSearchParams({
-                action: "updateRecord",
-                id: "PRINT_LOG",
-                br: "PRINT_LOG",
-                tabela: "PRINT_LOG",
-                autor: korisnik,
-                fullname: korisnik,
-                vrijeme: vrijemeSada,
-                komentar: `Dokument isprintao: ${korisnik} (${vrijemeSada})`
-            });
+        //     // 3. Šalje poziv na postojeći SCRIPT_URL (bez mijenjanja Apps Script koda)
+        //     let params = new URLSearchParams({
+        //         action: "updateRecord",
+        //         id: "PRINT_LOG",
+        //         br: "PRINT_LOG",
+        //         tabela: "PRINT_LOG",
+        //         autor: korisnik,
+        //         fullname: korisnik,
+        //         vrijeme: vrijemeSada,
+        //         komentar: `Dokument isprintao: ${korisnik} (${vrijemeSada})`
+        //     });
 
-            let iframe = document.getElementById('hidden_iframe');
-            if (iframe) {
-                iframe.src = `${SCRIPT_URL}?${params.toString()}`;
-            }
-            fetch(`${SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
+        //     let iframe = document.getElementById('hidden_iframe');
+        //     if (iframe) {
+        //         iframe.src = `${SCRIPT_URL}?${params.toString()}`;
+        //     }
+        //     fetch(`${SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
 
-            // 4. Pokreće prozor za štampu / PDF
-            setTimeout(() => {
-                window.print();
-            }, 150);
-        }
+        //     // 4. Pokreće prozor za štampu / PDF
+        //     setTimeout(() => {
+        //         window.print();
+        //     }, 150);
+        // }
 
+function handlePrint() {
+    let vrijemeSada = new Date().toLocaleString("bs-BA");
+    let korisnik = trenutniKorisnik || localStorage.getItem("user_fullname") || "Mirza Saračević";
+    let naslovDokumenta = document.title || "Izvještaj";
+
+    // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
+    let autorEl = document.getElementById('printAutorIme');
+    let vrijemeEl = document.getElementById('printVrijemeIspisa');
+    if (autorEl) autorEl.innerText = korisnik;
+    if (vrijemeEl) vrijemeEl.innerText = vrijemeSada;
+
+    // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
+    if (typeof evidencijaStampe !== "undefined" && Array.isArray(evidencijaStampe)) {
+        evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
+        localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+    }
+
+    // 3. Šalje PRINT_LOG kroz 'login' akciju da prođe u Sheets dnevnik
+    let logKorisnik = `${korisnik} — PRINT_LOG (${naslovDokumenta} | ${vrijemeSada})`;
+    let params = new URLSearchParams({
+        action: "login",
+        fullname: logKorisnik,
+        autor: korisnik,
+        vrijeme: vrijemeSada,
+        komentar: `Dokument isprintao: ${korisnik} (${vrijemeSada})`
+    });
+
+    let iframe = document.getElementById('hidden_iframe');
+    if (iframe) {
+        iframe.src = `${SCRIPT_URL}?${params.toString()}`;
+    }
+    fetch(`${SCRIPT_URL}?${params.toString()}`, { mode: 'no-cors' }).catch(() => {});
+
+    // 4. Pokreće prozor za štampu / PDF
+    setTimeout(() => {
+        window.print();
+    }, 150);
+}
+
+
+
+
+        
         function openPrintLogModal() {
             let listEl = document.getElementById('printLogList');
             if (!evidencijaStampe.length) {
