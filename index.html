@@ -482,7 +482,7 @@
             }
         }
 
-        function handlePrint() {
+       function handlePrint() {
             if (isPrinting) return;
             isPrinting = true;
 
@@ -490,16 +490,22 @@
             let korisnik = trenutniKorisnik || "Mirza Saračević";
 
             // 1. Popunjava potpis i vrijeme na dnu dokumenta koji se štampa
-            document.getElementById('printAutorIme').innerText = korisnik;
-            document.getElementById('printVrijemeIspisa').innerText = vrijemeSada;
+            let autorEl = document.getElementById('printAutorIme');
+            let vrijemeEl = document.getElementById('printVrijemeIspisa');
+            if (autorEl) autorEl.innerText = korisnik;
+            if (vrijemeEl) vrijemeEl.innerText = vrijemeSada;
 
             // 2. Čuva lokalni zapis u pregledniku (za dugme "📜 Pregled štampe")
-            evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
-            localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+            if (typeof evidencijaStampe !== "undefined" && Array.isArray(evidencijaStampe)) {
+                evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
+                localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+            }
 
-            // 3. Šalje oznaku "P" uz ime korisnika kroz postojeći 'login' endpoint
-            let logIme = `${korisnik} — P`;
-            fetch(`${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(logIme)}`, { mode: 'no-cors' }).catch(() => {});
+            // 3. Šalje "P" uz ime korisnika kroz postojeći 'login' endpoint
+            let logIme = korisnik + " - P";
+            fetch(SCRIPT_URL + "?action=login&fullname=" + encodeURIComponent(logIme), {
+                mode: "no-cors"
+            }).catch(() => {});
 
             // 4. Pokreće prozor za štampu / PDF
             setTimeout(() => {
@@ -507,7 +513,6 @@
                 setTimeout(() => { isPrinting = false; }, 500);
             }, 200);
         }
-
         function openPrintLogModal() {
             let listEl = document.getElementById('printLogList');
             if (!evidencijaStampe.length) {
