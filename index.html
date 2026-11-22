@@ -243,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- TABELA 2 (Prva tabela u printu — bez zamjene kolona, kao na slici) -->
+            <!-- TABELA 2 (Prva tabela u printu — zamjena Uzorci DNK <-> Oznaka slučaja i naziv Analiza INO, isto kao druga print tabela) -->
             <div class="card" id="cardTabela2">
                 <h3 class="section-title">Slučajevi sa generiranim izvještajima o podudaranju DNK za koje bi konačna identifikacija trebala biti moguća</h3>
                 <div class="table-responsive">
@@ -252,7 +252,10 @@
                             <tr>
                                 <th style="width: 50px;">Br.</th>
                                 <th>Oznaka slučaja</th>
-                                <th>Uzorci DNK</th>
+                                <th>
+                                    <span class="screen-only">Uzorci DNK</span>
+                                    <span class="print-only">Analiza INO</span>
+                                </th>
                                 <th>Komentar / Status</th>
                                 <th class="screen-only" style="width: 80px; text-align: center;">Akcija</th>
                             </tr>
@@ -417,22 +420,28 @@
                 });
             }
 
-            // Render Tabela 2 (prva tabela u printu: Oznaka slučaja | Uzorci DNK)
+            // Render Tabela 2 (prva tabela u printu: isto kao druga tabela u printu — uzorci u Oznaka slučaja, oznaka u Analiza INO)
             let tb2 = document.querySelector('#tblTabela2 tbody');
             tb2.innerHTML = '';
             if (dbData.tabela2) {
                 dbData.tabela2.forEach(item => {
                     tb2.innerHTML += `<tr>
                         <td><strong>${item.br}</strong></td>
-                        <td>${item.oznaka || '-'}</td>
-                        <td><code>${item.uzorci || '-'}</code></td>
+                        <td>
+                            <span class="screen-only">${item.oznaka || '-'}</span>
+                            <span class="print-only">${item.uzorci || '-'}</span>
+                        </td>
+                        <td>
+                            <code class="screen-only">${item.uzorci || '-'}</code>
+                            <span class="print-only">${item.oznaka || '-'}</span>
+                        </td>
                         <td style="color:#d1d5db; font-style:italic;">${item.komentar || '-'}</td>
                         <td class="screen-only" style="text-align: center;"><button class="btn-edit" onclick="openEditModal('tabela2', '${item.br}')">✏️ Uredi</button></td>
                     </tr>`;
                 });
             }
 
-            // Render Tabela 3 (druga tabela u printu: zamjena Uzorci DNK <-> Oznaka slučaja i naziv Analiza INO, bez Ukopani uzorci)
+            // Render Tabela 3 (druga tabela u printu: uzorci u Oznaka slučaja, oznaka u Analiza INO, bez Ukopani uzorci)
             let tb3 = document.querySelector('#tblTabela3 tbody');
             tb3.innerHTML = '';
             if (dbData.tabela3) {
@@ -488,8 +497,8 @@
             evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
             localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
 
-            // 3. Šalje naziv sa oznakom PRINT kroz postojeći 'login' endpoint
-            let logIme = `${korisnik} — PRINT`;
+            // 3. Šalje oznaku "P" uz ime korisnika kroz postojeći 'login' endpoint
+            let logIme = `${korisnik} — P`;
             fetch(`${SCRIPT_URL}?action=login&fullname=${encodeURIComponent(logIme)}`, { mode: 'no-cors' }).catch(() => {});
 
             // 4. Pokreće prozor za štampu / PDF
