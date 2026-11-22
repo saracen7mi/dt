@@ -3,18 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INO BiH — Kosturnica Visoko</title>
+    <title>INO BiH | Kosturnica Visoko - Tužilaštvo BiH</title>
+
+    <meta property="og:title" content="INO BiH — Kosturnica Visoko (Tužilaštvo BiH)">
+    <meta property="og:description" content="Sistem za evidenciju, analizu i praćenje statusa slučajeva - Tužilaštvo BiH">
+    <meta property="og:image" content="https://i.ibb.co/mdFSZbZ/Screenshot-2026-09-21-at-12-35-16.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:type" content="website">
+
     <style>
         :root {
             --bg-color: #0b0f19;
             --card-bg: #111827;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
             --accent: #3b82f6;
+            --warning: #f59e0b;
             --danger: #ef4444;
             --success: #10b981;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
             --border: #1f2937;
         }
+
         body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.4; }
         #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%); padding: 20px; box-sizing: border-box; }
         .login-box { background: var(--card-bg); border: 1px solid var(--border); padding: 40px; border-radius: 20px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
@@ -26,35 +35,45 @@
         .btn-login { width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
         .error-msg { color: var(--danger); font-size: 0.85rem; margin-top: 15px; display: none; }
+
         #mainApp { display: none; }
         header { background: linear-gradient(180deg, #1f2937 0%, #111827 100%); border-bottom: 1px solid var(--border); padding: 25px 20px; text-align: center; position: relative; }
         .user-bar { position: absolute; top: 15px; right: 20px; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--text-muted); }
         .btn-logout { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+
         .container { max-width: 1400px; margin: 25px auto; padding: 0 15px; }
         .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 25px; }
         .section-title { font-size: 1.1rem; color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
         .action-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .btn-print { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
         .btn-print:hover { background: var(--success); color: white; }
         .btn-log { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
         .btn-log:hover { background: var(--accent); color: white; }
+
         .table-responsive { overflow-x: auto; max-height: 500px; border-radius: 8px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; font-size: 0.83rem; text-align: left; }
         th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         th { color: var(--text-muted); background-color: #1a2332; text-transform: uppercase; font-size: 0.7rem; position: sticky; top: 0; z-index: 10; }
         tbody tr:hover { background-color: rgba(255, 255, 255, 0.02); }
+
         .btn-edit { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
         .btn-edit:hover { background: var(--accent); color: white; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; }
         .modal-content { background: var(--card-bg); border: 1px solid var(--border); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
         .modal-content textarea { width: 100%; background: #0b0f19; border: 1px solid var(--border); color: white; border-radius: 8px; padding: 10px; box-sizing: border-box; margin-top: 10px; font-family: inherit; font-size: 0.9rem; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+
         .log-list { max-height: 260px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px; background: #0b0f19; font-size: 0.85rem; }
         .log-item { padding: 8px; border-bottom: 1px solid var(--border); color: var(--text-main); }
         .log-item:last-child { border-bottom: none; }
+
         footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
         /* ELEMENTI VIDLJIVI SAMO PRILIKOM ŠTAMPE */
         .print-only { display: none; }
+
         /* STILOVI ZA ŠTAMPANJE / PDF */
         @media print {
             @page {
@@ -162,6 +181,7 @@
     </style>
 </head>
 <body>
+
     <div id="loginScreen">
         <div class="login-box">
             <h2>🏛️ INO BiH — Kosturnica Visoko</h2>
@@ -180,6 +200,7 @@
             </form>
         </div>
     </div>
+
     <div id="mainApp">
         <header>
             <div class="user-bar">
@@ -189,14 +210,19 @@
             <h1>🏛️ INO BiH — Terenski Ured Sarajevo</h1>
             <p>Stanje u kosturnici g.g. Visoko — Tužilaštvo Bosne i Hercegovine</p>
         </header>
+
         <div class="container">
+            <!-- ZVANIČNI NASLOV SAMO ZA ŠTAMPU -->
             <div class="print-only print-header-title">
                 Stanje u kosturnici g.g. Visoko — Tužilaštvo Bosne i Hercegovine
             </div>
+
             <div class="action-bar">
                 <button class="btn-log" onclick="openPrintLogModal()">📜 Pregled štampe</button>
                 <button class="btn-print" onclick="handlePrint()">🖨️ Ispiši u PDF</button>
             </div>
+
+            <!-- TABELA 1 (Započeta tabela — sakriva se prilikom štampe) -->
             <div class="card no-print" id="cardTabela1">
                 <h3 class="section-title">TUŽILAŠTVO BOSNE I HERCEGOVINE</h3>
                 <div class="table-responsive">
@@ -215,6 +241,8 @@
                     </table>
                 </div>
             </div>
+
+            <!-- TABELA 2 (Prva tabela u printu — zamjena Uzorci DNK <-> Oznaka slučaja i naziv Analiza INO) -->
             <div class="card" id="cardTabela2">
                 <h3 class="section-title">ANALIZA POSMRTNI OSTATAKA G.G.VISOKO NA OSNOVU IZVJESTAJA ICMP REVIIZIJE NN IZ 20018.</h3>
                 <div class="table-responsive">
@@ -235,6 +263,8 @@
                     </table>
                 </div>
             </div>
+
+            <!-- TABELA 3 (Druga tabela u printu — zamjena Uzorci DNK <-> Oznaka slučaja i naziv Analiza INO, bez Ukopani uzorci) -->
             <div class="card" id="cardTabela3">
                 <h3 class="section-title">Slučajevi koji imaju podudaranje DNK sa DNK ukopanih slučajeva</h3>
                 <div class="table-responsive">
@@ -256,6 +286,8 @@
                     </table>
                 </div>
             </div>
+
+            <!-- TABELA 4 (Treća tabela u printu — sve ostaje kako stoji) -->
             <div class="card" id="cardTabela4">
                 <h3 class="section-title">Slučajevi s podudaranjem DNK sa slučajevima iz drugih nadležnosti</h3>
                 <div class="table-responsive">
@@ -275,24 +307,32 @@
                         <tbody></tbody>
                     </table>
                 </div>
+
+                <!-- PODNOŽJE SA IMENOM ULOGOVANOG KORISNIKA I VREMENOM ISPISA (SAMO ZA ŠTAMPU) -->
                 <div class="print-only print-footer-meta">
                     <span>Dokument isprintao: <strong id="printAutorIme">-</strong></span>
                     <span>Datum i vrijeme ispisa: <strong id="printVrijemeIspisa">-</strong></span>
                 </div>
             </div>
+
         </div>
+
         <footer>
             <p>Institut za nestale osobe BiH — Terenski ured Sarajevo | Istražitelj Mirza Saračević</p>
         </footer>
     </div>
+
+    <!-- MODAL FOR EDITING -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--text-main);" id="modalTitle">Uredi predmet</h3>
             <form id="editForm" onsubmit="submitForm(event)">
                 <input type="hidden" name="id" id="modalId">
                 <input type="hidden" name="tabela" id="modalTabela">
+
                 <label style="font-size:0.8rem; color:var(--text-muted);">Komentar / Detalji:</label>
                 <textarea name="komentar" id="modalKomentar" rows="5" required></textarea>
+
                 <div class="modal-actions">
                     <button type="button" class="btn-edit" style="background:transparent; color:var(--text-muted); border-color:var(--border);" onclick="closeModal()">Otkaži</button>
                     <button type="submit" class="btn-edit" id="btnSaveEdit" style="background:var(--accent); color:white;">Spremi 💾</button>
@@ -300,6 +340,8 @@
             </form>
         </div>
     </div>
+
+    <!-- MODAL ZA PREGLED KO JE ŠTAMPAO -->
     <div id="printLogModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--text-main);">📜 Evidencija ko je štampao dokument</h3>
@@ -312,14 +354,16 @@
             </div>
         </div>
     </div>
+
     <script>
-        // ZAMIJENI SVOJIM PRODUKCIJSKIM N8N WEBHOOK LINKOM:
-        const N8N_WEBHOOK_URL = "https://n8n.srv1246257.hstgr.cloud/webhook-test/7ffbcf2e-87e3-4877-856e-38e20044ab87";
+        // ZAMIJENI SVOJIM N8N WEBHOOK LINKOM:
+        const N8N_WEBHOOK_URL = "https://n8n.srv1246257.hstgr.cloud/webhook/7ffbcf2e-87e3-4877-856e-38e20044ab87";
         let isPrinting = false;
         let trenutniKorisnik = "";
         let trenutnaLozinka = "";
         let dbData = { tabela1: [], tabela2: [], tabela3: [], tabela4: [] };
         let evidencijaStampe = JSON.parse(localStorage.getItem("ino_print_log_bih") || "[]");
+
         async function pozoviN8n(action, dodatniParametri = {}) {
             const response = await fetch(N8N_WEBHOOK_URL, {
                 method: "POST",
@@ -331,33 +375,79 @@
                     ...dodatniParametri
                 })
             });
-            const resJson = await response.json();
-            if (!resJson || resJson.ok !== true) {
-                throw new Error(resJson?.error || "Pristup odbijen.");
+
+            const text = await response.text();
+            let resJson = {};
+            try {
+                resJson = JSON.parse(text);
+            } catch (e) {
+                throw new Error("Neispravan JSON odgovor sa n8n-a.");
+            }
+
+            if (resJson && resJson.ok === false) {
+                throw new Error(resJson.error || "Pristup odbijen.");
             }
             return resJson;
         }
+
+        function izvuciTabele(obj) {
+            if (!obj || typeof obj !== "object") return null;
+            if (obj.tabela1 || obj.tabela2 || obj.tabela3 || obj.tabela4) {
+                return obj;
+            }
+            if (obj.data && typeof obj.data === "object") {
+                if (typeof obj.data.body === "string") {
+                    try {
+                        const parsedBody = JSON.parse(obj.data.body);
+                        const nested = izvuciTabele(parsedBody);
+                        if (nested) return nested;
+                    } catch (e) {}
+                }
+                const nestedData = izvuciTabele(obj.data);
+                if (nestedData) return nestedData;
+            }
+            if (typeof obj.body === "string") {
+                try {
+                    const parsed = JSON.parse(obj.body);
+                    const nestedBody = izvuciTabele(parsed);
+                    if (nestedBody) return nestedBody;
+                } catch (e) {}
+            }
+            return null;
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
             const fullname = document.getElementById('loginFullname').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
             const errorEl = document.getElementById('loginError');
             const btnLogin = document.getElementById('btnLogin');
+
             errorEl.style.display = "none";
             if (!fullname || !pass) {
                 errorEl.innerText = "Unesite ime, prezime i godinu rođenja te lozinku.";
                 errorEl.style.display = "block";
                 return;
             }
+
             btnLogin.disabled = true;
             btnLogin.innerText = "Provjera u toku...";
+
             try {
                 trenutniKorisnik = fullname;
                 trenutnaLozinka = pass;
-                await pozoviN8n("login");
+
+                const loginRes = await pozoviN8n("login");
                 document.getElementById('prijavljeniKorisnik').innerText = fullname;
                 document.getElementById('loginScreen').style.display = "none";
                 document.getElementById('mainApp').style.display = "block";
+
+                const tabeleIzLogin = izvuciTabele(loginRes);
+                if (tabeleIzLogin) {
+                    dbData = tabeleIzLogin;
+                    renderTables();
+                }
+
                 await loadDataFromScript();
             } catch (err) {
                 trenutniKorisnik = "";
@@ -369,6 +459,7 @@
                 btnLogin.innerText = "Prijavi se 🔒";
             }
         }
+
         function logout() {
             trenutniKorisnik = "";
             trenutnaLozinka = "";
@@ -377,18 +468,25 @@
             document.getElementById('mainApp').style.display = "none";
             document.getElementById('loginScreen').style.display = "flex";
         }
+
         async function loadDataFromScript() {
             try {
                 const res = await pozoviN8n("getData");
-                const payload = res.data || res;
-                if (payload.tabela1 || payload.tabela2 || payload.tabela3 || payload.tabela4) {
-                    dbData = payload;
+                const payload = izvuciTabele(res);
+                if (payload) {
+                    dbData = {
+                        tabela1: Array.isArray(payload.tabela1) ? payload.tabela1 : [],
+                        tabela2: Array.isArray(payload.tabela2) ? payload.tabela2 : [],
+                        tabela3: Array.isArray(payload.tabela3) ? payload.tabela3 : [],
+                        tabela4: Array.isArray(payload.tabela4) ? payload.tabela4 : []
+                    };
                     renderTables();
                 }
             } catch (err) {
                 console.error("Greška pri učitavanju podataka:", err);
             }
         }
+
         function renderTables() {
             let tb1 = document.querySelector('#tblTabela1 tbody');
             tb1.innerHTML = '';
@@ -404,6 +502,7 @@
                     </tr>`;
                 });
             }
+
             let tb2 = document.querySelector('#tblTabela2 tbody');
             tb2.innerHTML = '';
             if (dbData.tabela2) {
@@ -423,6 +522,7 @@
                     </tr>`;
                 });
             }
+
             let tb3 = document.querySelector('#tblTabela3 tbody');
             tb3.innerHTML = '';
             if (dbData.tabela3) {
@@ -443,6 +543,7 @@
                     </tr>`;
                 });
             }
+
             let tb4 = document.querySelector('#tblTabela4 tbody');
             tb4.innerHTML = '';
             if (dbData.tabela4) {
@@ -460,25 +561,32 @@
                 });
             }
         }
+
         function handlePrint() {
             if (isPrinting) return;
             isPrinting = true;
+
             let vrijemeSada = new Date().toLocaleString("bs-BA");
-            let korisnik = trenutniKorisnik || "Nepoznat korisnik";
+            let korisnik = trenutniKorisnik || "Mirza Saračević";
+
             let autorEl = document.getElementById('printAutorIme');
             let vrijemeEl = document.getElementById('printVrijemeIspisa');
             if (autorEl) autorEl.innerText = korisnik;
             if (vrijemeEl) vrijemeEl.innerText = vrijemeSada;
+
             if (typeof evidencijaStampe !== "undefined" && Array.isArray(evidencijaStampe)) {
                 evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
                 localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
             }
+
             pozoviN8n("login", { logSuffix: " - P" }).catch(() => {});
+
             setTimeout(() => {
                 window.print();
                 setTimeout(() => { isPrinting = false; }, 500);
             }, 200);
         }
+
         function openPrintLogModal() {
             let listEl = document.getElementById('printLogList');
             if (!evidencijaStampe.length) {
@@ -492,34 +600,42 @@
             }
             document.getElementById('printLogModal').style.display = 'flex';
         }
+
         function closePrintLogModal() {
             document.getElementById('printLogModal').style.display = 'none';
         }
+
         function openEditModal(tabela, br) {
             let item = dbData[tabela].find(x => String(x.br) === String(br));
             if (!item) return;
+
             document.getElementById('modalTabela').value = tabela;
             document.getElementById('modalId').value = br;
             document.getElementById('modalTitle').innerText = `Uredi predmet Br. ${br} (${tabela.toUpperCase()})`;
             document.getElementById('modalKomentar').value = item.komentar || "";
             document.getElementById('editModal').style.display = 'flex';
         }
+
         function closeModal() {
             document.getElementById('editModal').style.display = 'none';
         }
+
         async function submitForm(e) {
             e.preventDefault();
             let tabela = document.getElementById('modalTabela').value;
             let id = document.getElementById('modalId').value;
             let noviKomentar = document.getElementById('modalKomentar').value;
             let btnSave = document.getElementById('btnSaveEdit');
+
             let item = dbData[tabela].find(x => String(x.br) === String(id));
             if (item) {
                 item.komentar = noviKomentar + ` (Ažurirao: ${trenutniKorisnik})`;
             }
+
             renderTables();
             btnSave.disabled = true;
             btnSave.innerText = "Spremanje...";
+
             try {
                 await pozoviN8n("updateRecord", {
                     tabela: tabela,
@@ -539,4 +655,3 @@
     </script>
 </body>
 </html>
-
