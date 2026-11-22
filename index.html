@@ -563,30 +563,60 @@
             }
         }
 
-        function handlePrint() {
-            if (isPrinting) return;
-            isPrinting = true;
+function handlePrint() {
+    if (isPrinting) return;
+    isPrinting = true;
 
-            let vrijemeSada = new Date().toLocaleString("bs-BA");
-            let korisnik = trenutniKorisnik || "Mirza Saračević";
+    let vrijemeSada = new Date().toLocaleString("bs-BA");
+    let korisnik = trenutniKorisnik || "Mirza Saračević";
 
-            let autorEl = document.getElementById('printAutorIme');
-            let vrijemeEl = document.getElementById('printVrijemeIspisa');
-            if (autorEl) autorEl.innerText = korisnik;
-            if (vrijemeEl) vrijemeEl.innerText = vrijemeSada;
+    let autorEl = document.getElementById('printAutorIme');
+    let vrijemeEl = document.getElementById('printVrijemeIspisa');
+    if (autorEl) autorEl.innerText = korisnik;
+    if (vrijemeEl) vrijemeEl.innerText = vrijemeSada;
 
-            if (typeof evidencijaStampe !== "undefined" && Array.isArray(evidencijaStampe)) {
-                evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
-                localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
-            }
+    if (typeof evidencijaStampe !== "undefined" && Array.isArray(evidencijaStampe)) {
+        evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
+        localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+    }
 
-            pozoviN8n("login", { logSuffix: " - P" }).catch(() => {});
+    pozoviN8n("login", { logSuffix: " - P" }).catch(() => {});
 
-            setTimeout(() => {
-                window.print();
-                setTimeout(() => { isPrinting = false; }, 500);
-            }, 200);
-        }
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => { isPrinting = false; }, 500);
+    }, 200);
+}
+
+
+
+
+
+        
+        // function handlePrint() {
+        //     if (isPrinting) return;
+        //     isPrinting = true;
+
+        //     let vrijemeSada = new Date().toLocaleString("bs-BA");
+        //     let korisnik = trenutniKorisnik || "Mirza Saračević";
+
+        //     let autorEl = document.getElementById('printAutorIme');
+        //     let vrijemeEl = document.getElementById('printVrijemeIspisa');
+        //     if (autorEl) autorEl.innerText = korisnik;
+        //     if (vrijemeEl) vrijemeEl.innerText = vrijemeSada;
+
+        //     if (typeof evidencijaStampe !== "undefined" && Array.isArray(evidencijaStampe)) {
+        //         evidencijaStampe.unshift({ korisnik: korisnik, vrijeme: vrijemeSada });
+        //         localStorage.setItem("ino_print_log_bih", JSON.stringify(evidencijaStampe));
+        //     }
+
+        //     pozoviN8n("login", { logSuffix: " - P" }).catch(() => {});
+
+        //     setTimeout(() => {
+        //         window.print();
+        //         setTimeout(() => { isPrinting = false; }, 500);
+        //     }, 200);
+        // }
 
         function openPrintLogModal() {
             let listEl = document.getElementById('printLogList');
